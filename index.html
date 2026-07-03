@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Expense Tracker & Budget Manager</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/wallet.png">
+  
+  <!-- CSS Stylesheets -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation (Desktop) -->
+    <aside class="sidebar" id="sidebar">
+      <a href="#landing" class="sidebar-logo">
+        <i class="fa-solid fa-wallet"></i>
+        <span>BudgetFlow</span>
+      </a>
+      
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item" id="nav-dashboard">
+          <a href="#dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item" id="nav-expenses">
+          <a href="#expenses">
+            <i class="fa-solid fa-receipt"></i>
+            <span>Expenses</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item" id="nav-income">
+          <a href="#income">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>Income</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item" id="nav-reports">
+          <a href="#reports">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Reports</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item" id="nav-categories">
+          <a href="#categories">
+            <i class="fa-solid fa-tags"></i>
+            <span>Categories</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item" id="nav-settings">
+          <a href="#settings">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer mt-auto pt-3 border-top border-secondary">
+        <a href="#aboutModal" data-bs-toggle="modal" class="d-flex align-items-center gap-3 text-decoration-none text-muted">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>About v1.2</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Bottom Navigation Bar (Mobile Viewports) -->
+    <nav class="bottom-nav">
+      <a href="#dashboard" class="bottom-nav-item" id="bnav-dashboard">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#expenses" class="bottom-nav-item" id="bnav-expenses">
+        <i class="fa-solid fa-receipt"></i>
+        <span>Expenses</span>
+      </a>
+      <a href="#income" class="bottom-nav-item" id="bnav-income">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        <span>Income</span>
+      </a>
+      <a href="#reports" class="bottom-nav-item" id="bnav-reports">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Reports</span>
+      </a>
+      <a href="#settings" class="bottom-nav-item" id="bnav-settings">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-sm btn-secondary-custom d-lg-block" id="sidebar-toggle" title="Toggle Sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <h5 class="m-0 font-weight-bold d-none d-sm-block text-gradient" id="topbar-title">Smart Budget</h5>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+          <!-- Connection Status Indicator -->
+          <span class="badge badge-custom bg-secondary text-light d-flex align-items-center" id="connection-status" title="API State">
+            <i class="fa-solid fa-circle text-success me-1 blink" id="status-dot"></i>
+            <span id="status-text">Mock DB Mode</span>
+          </span>
+
+          <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
+            <i class="fa-solid fa-sun" id="theme-icon"></i>
+          </button>
+          
+          <button class="btn btn-brand" id="quick-add-btn">
+            <i class="fa-solid fa-plus me-1"></i> Add Expense
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Wrapper -->
+      <div class="content-wrapper">
+        
+        <!-- ========================================== -->
+        <!-- LANDING VIEW                               -->
+        <!-- ========================================== -->
+        <section id="landing-view" class="view-section">
+          <div class="landing-hero">
+            <div class="stat-card-icon bg-brand-gradient text-white mb-4" style="width:72px; height:72px; font-size: 2rem;">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <h1 class="landing-title">Personal Expense Tracker <br><span class="text-gradient">& Smart Budget Manager</span></h1>
+            <p class="landing-subtitle">
+              A premium, automated spreadsheet-backed budgeting tool. Track your daily expenses, log incomes, and carry forward remaining budgets automatically without database servers.
+            </p>
+            
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+              <a href="#dashboard" class="btn btn-brand btn-lg px-4">
+                <i class="fa-solid fa-rocket me-2"></i>Get Started
+              </a>
+              <a href="#settings" class="btn btn-secondary-custom btn-lg px-4">
+                <i class="fa-solid fa-sliders me-2"></i>Configure Sheets
+              </a>
+              <button class="btn btn-secondary-custom btn-lg px-4" data-bs-toggle="modal" data-bs-target="#aboutModal">
+                <i class="fa-solid fa-circle-info me-2"></i>About App
+              </button>
+            </div>
+
+            <div class="landing-cards">
+              <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-cloud-arrow-up text-gradient mb-3" style="font-size:2rem;"></i>
+                <h5>Google Sheets DB</h5>
+                <p class="text-secondary small m-0">Zero host fees. Read and write directly to your spreadsheet securely.</p>
+              </div>
+              <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-hand-holding-dollar text-gradient mb-3" style="font-size:2rem;"></i>
+                <h5>Income Tracking</h5>
+                <p class="text-secondary small m-0">Monitor salary, freelancing, and savings trends on the fly.</p>
+              </div>
+              <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-chart-pie text-gradient mb-3" style="font-size:2rem;"></i>
+                <h5>Analytics & Charts</h5>
+                <p class="text-secondary small m-0">Explore visual category splits and daily spending trends on any device.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- DASHBOARD VIEW                             -->
+        <!-- ========================================== -->
+        <section id="dashboard-view" class="view-section d-none">
+          <div class="row align-items-center mb-4">
+            <div class="col-md-6">
+              <h2 class="m-0 font-weight-bold">Financial Overview</h2>
+              <p class="text-muted m-0">Real-time spending, income, and budget tracking metrics</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0 d-flex gap-2 justify-content-md-end flex-wrap">
+              <button class="btn btn-secondary-custom" id="refresh-dashboard-btn">
+                <i class="fa-solid fa-rotate me-1"></i> Refresh
+              </button>
+              <div class="dropdown">
+                <button class="btn btn-secondary-custom dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  <i class="fa-solid fa-download me-1"></i> Export
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" id="export-excel-btn"><i class="fa-solid fa-file-excel me-2 text-success"></i>Excel (.xlsx)</a></li>
+                  <li><a class="dropdown-item" href="#" id="export-csv-btn"><i class="fa-solid fa-file-csv me-2 text-primary"></i>CSV (.csv)</a></li>
+                  <li><a class="dropdown-item" href="#" id="export-pdf-btn"><i class="fa-solid fa-file-pdf me-2 text-danger"></i>Print/PDF</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Budget Progress Bar -->
+          <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="m-0 fw-bold">Today's Remaining Budget Progress</h6>
+              <span class="badge badge-custom bg-brand-gradient" id="progress-percent-badge">0% left</span>
+            </div>
+            <div class="progress-bar-custom">
+              <div class="progress-bar-fill" id="dashboard-progress-bar" style="width: 0%"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-2 small text-muted">
+              <span>Spent: <strong class="text-danger" id="progress-spent-text">$0.00</strong></span>
+              <span>Warning Limit: <span id="progress-warning-text">20%</span></span>
+              <span>Available: <strong class="text-success" id="progress-avail-text">$0.00</strong></span>
+            </div>
+          </div>
+
+          <!-- Metric Cards Grid (12 Cards with Income and Savings) -->
+          <div class="row row-cols-2 row-cols-md-4 g-3 g-md-4 mb-4">
+            <!-- Card 1: Today's Base Budget -->
+            <div class="col">
+              <div class="glass-card stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                <div class="stat-card-value" id="card-today-budget">$0.00</div>
+                <div class="stat-card-label">Today's Budget</div>
+              </div>
+            </div>
+            <!-- Card 2: Carry Forward -->
+            <div class="col">
+              <div class="glass-card stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-forward"></i></div>
+                <div class="stat-card-value" id="card-carry-forward">$0.00</div>
+                <div class="stat-card-label">Carry Forward</div>
+              </div>
+            </div>
+            <!-- Card 3: Adjusted Budget -->
+            <div class="col">
+              <div class="glass-card stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-calculator"></i></div>
+                <div class="stat-card-value" id="card-adjusted-budget">$0.00</div>
+                <div class="stat-card-label">Adjusted Budget</div>
+              </div>
+            </div>
+            <!-- Card 4: Remaining Budget -->
+            <div class="col">
+              <div class="glass-card stat-card border-bottom border-3 border-success">
+                <div class="stat-card-icon"><i class="fa-solid fa-money-bill-wave text-success"></i></div>
+                <div class="stat-card-value text-success" id="card-remaining-budget">$0.00</div>
+                <div class="stat-card-label">Remaining Budget</div>
+              </div>
+            </div>
+            <!-- Card 5: Today's Spending -->
+            <div class="col">
+              <div class="glass-card stat-card border-bottom border-3 border-danger">
+                <div class="stat-card-icon"><i class="fa-solid fa-cart-shopping text-danger"></i></div>
+                <div class="stat-card-value text-danger" id="card-today-spending">$0.00</div>
+                <div class="stat-card-label">Today's Spending</div>
+              </div>
+            </div>
+            <!-- Card 6: Today's Income -->
+            <div class="col">
+              <div class="glass-card stat-card border-bottom border-3 border-info">
+                <div class="stat-card-icon"><i class="fa-solid fa-hand-holding-dollar text-info"></i></div>
+                <div class="stat-card-value text-info" id="card-today-income">$0.00</div>
+                <div class="stat-card-label">Today's Income</div>
+              </div>
+            </div>
+            <!-- Card 7: Monthly Spending -->
+            <div class="col">
+              <div class="glass-card stat-card border-bottom border-3 border-danger">
+                <div class="stat-card-icon"><i class="fa-solid fa-receipt text-danger"></i></div>
+                <div class="stat-card-value text-danger" id="card-monthly-spending">$0.00</div>
+                <div class="stat-card-label">Monthly Spending</div>
+              </div>
+            </div>
+            <!-- Card 8: Monthly Income -->
+            <div class="col">
+              <div class="glass-card stat-card border-bottom border-3 border-success">
+                <div class="stat-card-icon"><i class="fa-solid fa-wallet text-success"></i></div>
+                <div class="stat-card-value text-success" id="card-monthly-income">$0.00</div>
+                <div class="stat-card-label">Monthly Income</div>
+              </div>
+            </div>
+            <!-- Card 9: Net Savings -->
+            <div class="col">
+              <div class="glass-card stat-card bg-brand-gradient text-white border-0">
+                <div class="stat-card-icon bg-white bg-opacity-20 text-white"><i class="fa-solid fa-vault"></i></div>
+                <div class="stat-card-value" id="card-net-savings">$0.00</div>
+                <div class="stat-card-label text-white text-opacity-80">Net Monthly Savings</div>
+              </div>
+            </div>
+            <!-- Card 10: Tomorrow's Budget -->
+            <div class="col">
+              <div class="glass-card stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+                <div class="stat-card-value" id="card-tomorrow-budget">$0.00</div>
+                <div class="stat-card-label">Tomorrow Budget (Est)</div>
+              </div>
+            </div>
+            <!-- Card 11: Weekly Spending -->
+            <div class="col">
+              <div class="glass-card stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                <div class="stat-card-value" id="card-weekly-spending">$0.00</div>
+                <div class="stat-card-label">Weekly Spending</div>
+              </div>
+            </div>
+            <!-- Card 12: Weekly Income -->
+            <div class="col">
+              <div class="glass-card stat-card">
+                <div class="stat-card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                <div class="stat-card-value" id="card-weekly-income">$0.00</div>
+                <div class="stat-card-label">Weekly Income</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Dashboard Panel: Search, Filters & Recent Transactions -->
+          <div class="row g-4">
+            <div class="col-12">
+              <div class="glass-card p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                  <h5 class="m-0 fw-bold">Recent Expenses</h5>
+                  
+                  <!-- Filter bar -->
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <input type="text" class="form-control form-control-custom form-control-sm" placeholder="Search..." id="dashboard-search-input" style="max-width:200px;">
+                    <select class="form-select form-control-custom form-control-sm" id="dashboard-category-filter" style="max-width:150px;">
+                      <option value="">All Categories</option>
+                    </select>
+                    <a href="#expenses" class="btn btn-sm btn-secondary-custom">View All</a>
+                  </div>
+                </div>
+
+                <div class="table-responsive table-responsive-custom">
+                  <table class="table table-custom align-middle">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Notes</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashboard-expenses-body">
+                      <!-- Recent items dynamic load -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- EXPENSES TABLE VIEW                        -->
+        <!-- ========================================== -->
+        <section id="expenses-view" class="view-section d-none">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+              <h2 class="m-0 font-weight-bold">Transactions Register</h2>
+              <p class="text-muted m-0">Detailed list of all logged expenses</p>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2">
+              <div class="btn-group d-none" id="bulk-actions-group">
+                <button class="btn btn-danger" id="bulk-delete-btn"><i class="fa-solid fa-trash me-1"></i> Delete Selected</button>
+                <button class="btn btn-secondary-custom" id="bulk-export-btn"><i class="fa-solid fa-file-export me-1"></i> Export Selected</button>
+              </div>
+              <button class="btn btn-brand" id="add-expense-btn-register">
+                <i class="fa-solid fa-plus me-1"></i> Log Expense
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card p-4">
+            <!-- Filters Toolbar -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">Search Transaction</label>
+                <input type="text" class="form-control form-control-custom" id="filter-search" placeholder="Name or Notes...">
+              </div>
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">Filter Category</label>
+                <select class="form-select form-control-custom" id="filter-category">
+                  <option value="">All Categories</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">Start Date</label>
+                <input type="date" class="form-control form-control-custom" id="filter-start-date">
+              </div>
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">End Date</label>
+                <input type="date" class="form-control form-control-custom" id="filter-end-date">
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive table-responsive-custom mb-3">
+              <table class="table table-custom align-middle">
+                <thead>
+                  <tr>
+                    <th width="40">
+                      <input type="checkbox" class="form-check-input" id="check-all-expenses">
+                    </th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Expense Name</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Notes</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="expenses-table-body">
+                  <!-- Paginated items loader -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination details -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <div class="text-muted small" id="pagination-info">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <nav>
+                <ul class="pagination pagination-sm m-0" id="expenses-pagination">
+                  <!-- Dynamic pages list -->
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- INCOME TABLE VIEW [NEW]                     -->
+        <!-- ========================================== -->
+        <section id="income-view" class="view-section d-none">
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+              <h2 class="m-0 font-weight-bold">Income Register</h2>
+              <p class="text-muted m-0">Detailed list of all logged income sources</p>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2">
+              <div class="btn-group d-none" id="bulk-income-actions-group">
+                <button class="btn btn-danger" id="bulk-income-delete-btn"><i class="fa-solid fa-trash me-1"></i> Delete Selected</button>
+                <button class="btn btn-secondary-custom" id="bulk-income-export-btn"><i class="fa-solid fa-file-export me-1"></i> Export Selected</button>
+              </div>
+              <button class="btn btn-brand bg-success border-0 text-white" id="add-income-btn-register">
+                <i class="fa-solid fa-plus me-1"></i> Log Income
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card p-4">
+            <!-- Filters Toolbar -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">Search Income</label>
+                <input type="text" class="form-control form-control-custom" id="income-filter-search" placeholder="Description or Notes...">
+              </div>
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">Filter Source</label>
+                <select class="form-select form-control-custom" id="income-filter-source">
+                  <option value="">All Sources</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">Start Date</label>
+                <input type="date" class="form-control form-control-custom" id="income-filter-start-date">
+              </div>
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small text-muted">End Date</label>
+                <input type="date" class="form-control form-control-custom" id="income-filter-end-date">
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive table-responsive-custom mb-3">
+              <table class="table table-custom align-middle">
+                <thead>
+                  <tr>
+                    <th width="40">
+                      <input type="checkbox" class="form-check-input" id="check-all-incomes">
+                    </th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Description</th>
+                    <th>Source Category</th>
+                    <th>Amount</th>
+                    <th>Notes</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="income-table-body">
+                  <!-- Paginated items loader -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination details -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <div class="text-muted small" id="income-pagination-info">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <nav>
+                <ul class="pagination pagination-sm m-0" id="income-pagination">
+                  <!-- Dynamic pages list -->
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- REPORTS VIEW                               -->
+        <!-- ========================================== -->
+        <section id="reports-view" class="view-section d-none">
+          <div class="row align-items-center mb-4">
+            <div class="col-sm-6">
+              <h2 class="m-0 font-weight-bold">Financial Analytics</h2>
+              <p class="text-muted m-0">Performance charts and reports builder</p>
+            </div>
+            <div class="col-sm-6 text-sm-end mt-3 mt-sm-0 d-flex gap-2 justify-content-sm-end flex-wrap">
+              <button class="btn btn-secondary-custom" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Print Report</button>
+              <button class="btn btn-secondary-custom" id="report-export-excel-btn"><i class="fa-solid fa-file-excel me-1"></i> Excel</button>
+            </div>
+          </div>
+
+          <!-- Analysis Type Selector and Timeframe Nav Pills -->
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <ul class="nav nav-pills nav-pills-custom gap-2" id="reports-tabs" role="tablist">
+              <li class="nav-item"><a class="nav-link active" data-range="today" href="#">Today</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="yesterday" href="#">Yesterday</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="weekly" href="#">Weekly</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="monthly" href="#">Monthly</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="yearly" href="#">Yearly</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="category" href="#">By Category</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="custom" href="#">Custom Range</a></li>
+            </ul>
+
+            <!-- Report Type (Expenses vs Income) -->
+            <div class="d-flex align-items-center gap-2">
+              <label class="small text-muted fw-bold">Analysis Type:</label>
+              <select class="form-select form-control-custom form-control-sm" id="report-type-select" style="min-width: 150px;">
+                <option value="expense">Expense Analytics</option>
+                <option value="income">Income Analytics</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Custom range dates picker -->
+          <div class="glass-card p-3 mb-4 d-none" id="reports-custom-range-picker">
+            <div class="row g-3 align-items-end">
+              <div class="col-sm-4">
+                <label class="form-label small text-muted">From Date</label>
+                <input type="date" class="form-control form-control-custom" id="report-start-date">
+              </div>
+              <div class="col-sm-4">
+                <label class="form-label small text-muted">To Date</label>
+                <input type="date" class="form-control form-control-custom" id="report-end-date">
+              </div>
+              <div class="col-sm-4">
+                <button class="btn btn-brand w-100" id="report-apply-custom-btn">Generate Report</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category filter picker -->
+          <div class="glass-card p-3 mb-4 d-none" id="reports-category-picker">
+            <div class="row g-3 align-items-end">
+              <div class="col-sm-8">
+                <label class="form-label small text-muted">Select Category/Source</label>
+                <select class="form-select form-control-custom" id="report-category-select">
+                  <!-- Categories filled dynamically -->
+                </select>
+              </div>
+              <div class="col-sm-4">
+                <button class="btn btn-brand w-100" id="report-apply-category-btn">Generate Report</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Report summary cards -->
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-4">
+            <div class="col">
+              <div class="glass-card stat-card border-start border-4 border-primary">
+                <div class="stat-card-value" id="report-card-spending">$0.00</div>
+                <div class="stat-card-label" id="report-label-total">Total Spending</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="glass-card stat-card border-start border-4 border-info">
+                <div class="stat-card-value" id="report-card-avg-budget">$0.00</div>
+                <div class="stat-card-label">Daily Avg Budget</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="glass-card stat-card border-start border-4 border-success">
+                <div class="stat-card-value" id="report-card-adj-budget">$0.00</div>
+                <div class="stat-card-label">Total Allocated</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="glass-card stat-card border-start border-4 border-warning">
+                <div class="stat-card-value" id="report-card-remaining">$0.00</div>
+                <div class="stat-card-label">Net Remaining</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Area -->
+          <div class="row g-4 mb-4">
+            <!-- Chart 1: Category split -->
+            <div class="col-md-5">
+              <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold mb-4" id="report-chart-title-distribution">Category Distribution</h5>
+                <div class="chart-container-custom d-flex align-items-center justify-content-center">
+                  <canvas id="report-category-chart"></canvas>
+                </div>
+              </div>
+            </div>
+            <!-- Chart 2: Daily trends -->
+            <div class="col-md-7">
+              <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold mb-4" id="report-chart-title-trend">Spending vs Budget Trend</h5>
+                <div class="chart-container-custom">
+                  <canvas id="report-trend-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction log for report -->
+          <div class="glass-card p-4">
+            <h5 class="fw-bold mb-4" id="report-table-title">Included Transactions</h5>
+            <div class="table-responsive table-responsive-custom">
+              <table class="table table-custom align-middle">
+                <thead>
+                  <tr id="report-table-headers">
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="report-expenses-body">
+                  <!-- filled dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- CATEGORIES VIEW                            -->
+        <!-- ========================================== -->
+        <section id="categories-view" class="view-section d-none">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h2 class="m-0 font-weight-bold">Category Manager</h2>
+              <p class="text-muted m-0">Setup labels for your transactions</p>
+            </div>
+            <button class="btn btn-brand" id="add-category-btn"><i class="fa-solid fa-plus me-1"></i> Add Category</button>
+          </div>
+
+          <div class="row g-4">
+            <!-- Left Side: List and Reordering -->
+            <div class="col-md-8">
+              <div class="glass-card p-4">
+                <div class="alert alert-info py-2 small mb-3">
+                  <i class="fa-solid fa-circle-info me-2"></i>Drag and drop elements to reorder display sequence in lists.
+                </div>
+                <div class="category-drag-list" id="category-list-container">
+                  <!-- Filled dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side: Fast Instructions -->
+            <div class="col-md-4">
+              <div class="glass-card p-4">
+                <h5 class="fw-bold mb-3">Category Rules</h5>
+                <ul class="text-secondary small ps-3">
+                  <li class="mb-2"><strong>Single Source of Truth:</strong> Categories are loaded directly from the spreadsheet database.</li>
+                  <li class="mb-2"><strong>Disabling:</strong> Instead of deleting categories with existing transactions, set their status to "Disabled" to keep historical records intact.</li>
+                  <li class="mb-2"><strong>Syncing:</strong> Reordering automatically updates display parameters on the Google Sheets `Categories` tab.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SETTINGS VIEW                              -->
+        <!-- ========================================== -->
+        <section id="settings-view" class="view-section d-none">
+          <div class="mb-4">
+            <h2 class="m-0 font-weight-bold">Application Configuration</h2>
+            <p class="text-muted m-0">Manage Sheet links, daily budget engines, and preferences</p>
+          </div>
+
+          <div class="row g-4">
+            
+            <!-- Left Column: Settings Form -->
+            <div class="col-lg-8">
+              <form id="settings-form">
+                <!-- Tab 1: Connection Settings -->
+                <div class="glass-card p-4 mb-4">
+                  <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="fa-solid fa-link me-2 text-primary"></i>Google Spreadsheet Sync</h5>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label small text-muted">Apps Script Web App URL</label>
+                      <input type="text" class="form-control form-control-custom" id="setting-script-url" placeholder="https://script.google.com/macros/s/.../exec">
+                      <div class="form-text text-muted small">The web app URL obtained when deploying your Apps Script project.</div>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label small text-muted">Google Spreadsheet ID (Optional)</label>
+                      <input type="text" class="form-control form-control-custom" id="setting-sheet-id" placeholder="1aBcD...eFgH">
+                      <div class="form-text text-muted small">Only needed for reference if binding via standalone Apps Script projects.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tab 2: Budget Engine configurations -->
+                <div class="glass-card p-4 mb-4">
+                  <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="fa-solid fa-coins me-2 text-warning"></i>Budget Engine Limits</h5>
+                  <div class="row g-3">
+                    <div class="col-sm-4">
+                      <label class="form-label small text-muted">Weekday Budget (Mon-Fri)</label>
+                      <input type="number" class="form-control form-control-custom" id="setting-weekday-budget" min="0" step="0.01">
+                    </div>
+                    <div class="col-sm-4">
+                      <label class="form-label small text-muted">Weekend Budget (Sat-Sun)</label>
+                      <input type="number" class="form-control form-control-custom" id="setting-weekend-budget" min="0" step="0.01">
+                    </div>
+                    <div class="col-sm-4">
+                      <label class="form-label small text-muted">Holiday Budget</label>
+                      <input type="number" class="form-control form-control-custom" id="setting-holiday-budget" min="0" step="0.01">
+                    </div>
+                    
+                    <div class="col-md-6 col-12">
+                      <label class="form-label small text-muted">Designated Holiday Dates (YYYY-MM-DD, comma separated)</label>
+                      <textarea class="form-control form-control-custom" id="setting-holidays" rows="2" placeholder="e.g. 2026-01-01, 2026-07-04, 2026-12-25"></textarea>
+                    </div>
+
+                    <div class="col-md-6 col-12">
+                      <label class="form-label small text-muted">Warning Threshold (%)</label>
+                      <div class="input-group">
+                        <input type="number" class="form-control form-control-custom" id="setting-warning-threshold" min="0" max="100">
+                        <span class="input-group-text bg-tertiary border-0 text-muted">% remaining</span>
+                      </div>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                      <label class="form-label small text-muted">Income Category Sources (comma separated)</label>
+                      <input type="text" class="form-control form-control-custom" id="setting-income-sources" placeholder="Salary, Freelance, Investment, Gifts, Other">
+                    </div>
+
+                    <div class="col-12 mt-4">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="setting-carry-forward">
+                        <label class="form-check-label fw-bold" for="setting-carry-forward">Enable Budget Carry Forward</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tab 3: Display Settings -->
+                <div class="glass-card p-4 mb-4">
+                  <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="fa-solid fa-sliders me-2 text-info"></i>Interface Options</h5>
+                  <div class="row g-3">
+                    <div class="col-sm-6">
+                      <label class="form-label small text-muted">Currency Code/Symbol</label>
+                      <input type="text" class="form-control form-control-custom" id="setting-currency" placeholder="$">
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-muted">Visual Theme</label>
+                      <select class="form-select form-control-custom" id="setting-theme">
+                        <option value="dark">Dark Theme</option>
+                        <option value="light">Light Theme</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-muted">Date Format</label>
+                      <input type="text" class="form-control form-control-custom" id="setting-date-format" placeholder="YYYY-MM-DD">
+                    </div>
+                    <div class="col-sm-6">
+                      <label class="form-label small text-muted">Time Format</label>
+                      <input type="text" class="form-control form-control-custom" id="setting-time-format" placeholder="HH:mm">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-brand" id="save-settings-btn"><i class="fa-solid fa-circle-check me-1"></i> Save Configurations</button>
+                  <button type="button" class="btn btn-secondary-custom" id="reset-settings-btn"><i class="fa-solid fa-rotate-left me-1"></i> Reset Defaults</button>
+                  <button type="button" class="btn btn-secondary-custom" id="reload-settings-btn"><i class="fa-solid fa-sync me-1"></i> Reload Settings</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Right Column: Instructions -->
+            <div class="col-lg-4">
+              <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-info-circle me-2 text-info"></i>Setup Instructions</h5>
+                <p class="small text-secondary mb-3">To connect your actual Google Sheet, follow these simple steps:</p>
+                <ol class="small text-secondary ps-3 mb-0">
+                  <li class="mb-2">Open the backend code script file <a href="Code.js" target="_blank">Code.js</a>.</li>
+                  <li class="mb-2">Create a new <strong>Google Sheet</strong> and copy its URL ID.</li>
+                  <li class="mb-2">Click <strong>Extensions -> Apps Script</strong> in Google Sheets, paste the code, and click save.</li>
+                  <li class="mb-2">Click <strong>Deploy -> New Deployment</strong>, choose type <strong>Web App</strong>, set access to <strong>Anyone</strong>.</li>
+                  <li class="mb-2">Copy the generated Web App Exec URL and paste it in the box on the left, then click <strong>Save Configurations</strong>.</li>
+                </ol>
+              </div>
+
+              <div class="glass-card p-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i>Budget Recalculation</h5>
+                <p class="small text-secondary mb-3">If you modify historical records manually inside Google Sheets, you may need to force recalculate budget history to sync cumulative carry forwards.</p>
+                <div class="row g-2">
+                  <div class="col-7">
+                    <input type="date" class="form-control form-control-custom form-control-sm" id="recalc-start-date">
+                  </div>
+                  <div class="col-5">
+                    <button class="btn btn-sm btn-secondary-custom w-100" id="trigger-recalc-btn">Sync History</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL DIALOGS                              -->
+  <!-- ========================================== -->
+
+  <!-- Add/Edit Expense Modal -->
+  <div class="modal fade" id="expenseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-glass">
+        <form id="expense-form">
+          <input type="hidden" id="expense-id">
+          <input type="hidden" id="expense-action" value="add">
+          
+          <div class="modal-header-custom d-flex justify-content-between align-items-center">
+            <h5 class="modal-title fw-bold" id="expenseModalLabel">Log Expense</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small text-muted">Expense Description *</label>
+                <input type="text" class="form-control form-control-custom" id="expense-name" required placeholder="e.g. Groceries at Market">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Amount *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-tertiary border-0 text-muted" id="expense-currency-addon">$</span>
+                  <input type="number" class="form-control form-control-custom" id="expense-amount" required min="0.01" step="0.01" placeholder="0.00">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Category *</label>
+                <select class="form-select form-control-custom" id="expense-category" required>
+                  <!-- Dynamically loaded -->
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Date</label>
+                <input type="date" class="form-control form-control-custom" id="expense-date" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Time</label>
+                <input type="time" class="form-control form-control-custom" id="expense-time" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Notes (Optional)</label>
+                <textarea class="form-control form-control-custom" id="expense-notes" rows="2" placeholder="More details about this transaction..."></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer-custom d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary-custom text-warning" id="reset-expense-form-btn">Reset</button>
+            <button type="submit" class="btn btn-brand" id="save-expense-btn">Save Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Income Modal [NEW] -->
+  <div class="modal fade" id="incomeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-glass">
+        <form id="income-form">
+          <input type="hidden" id="income-id">
+          <input type="hidden" id="income-action" value="add">
+          
+          <div class="modal-header-custom d-flex justify-content-between align-items-center">
+            <h5 class="modal-title fw-bold" id="incomeModalLabel">Log Income</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small text-muted">Income Description *</label>
+                <input type="text" class="form-control form-control-custom" id="income-name" required placeholder="e.g. Monthly Paycheck">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Amount *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-tertiary border-0 text-muted" id="income-currency-addon">$</span>
+                  <input type="number" class="form-control form-control-custom" id="income-amount" required min="0.01" step="0.01" placeholder="0.00">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Source *</label>
+                <select class="form-select form-control-custom" id="income-source" required>
+                  <!-- Loaded from Settings setting income_sources -->
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Date</label>
+                <input type="date" class="form-control form-control-custom" id="income-date" required>
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small text-muted">Time</label>
+                <input type="time" class="form-control form-control-custom" id="income-time" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label small text-muted">Notes (Optional)</label>
+                <textarea class="form-control form-control-custom" id="income-notes" rows="2" placeholder="Details (bank account, job name etc)..."></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer-custom d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary-custom text-warning" id="reset-income-form-btn">Reset</button>
+            <button type="submit" class="btn btn-brand bg-success border-0 text-white" id="save-income-btn">Save Income</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-glass">
+        <form id="category-form">
+          <input type="hidden" id="category-id">
+          <input type="hidden" id="category-action" value="add">
+          
+          <div class="modal-header-custom d-flex justify-content-between align-items-center">
+            <h5 class="modal-title fw-bold" id="categoryModalLabel">Create Category</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label small text-muted">Category Name *</label>
+                <input type="text" class="form-control form-control-custom" id="category-name" required placeholder="e.g. Travel, Gym, Gift">
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer-custom d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-brand" id="save-category-btn">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- About App Modal -->
+  <div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-glass">
+        <div class="modal-header-custom d-flex justify-content-between align-items-center">
+          <h5 class="modal-title fw-bold">About BudgetFlow</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="text-center mb-3">
+            <div class="stat-card-icon bg-brand-gradient text-white mx-auto mb-2" style="width:60px; height:60px; font-size: 1.50rem;">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <h6 class="fw-bold m-0">BudgetFlow Tracker & Planner</h6>
+            <span class="text-muted small">Version 1.2.0 (Mobile & Income Tracking Release)</span>
+          </div>
+          <p class="small text-secondary text-justify">
+            BudgetFlow is a serverless, premium expense tracker and income planner application that uses Google Sheets as a database via a Google Apps Script Web App. It runs CORS-free and incorporates a full offline fallback engine.
+          </p>
+          <div class="border-top border-secondary pt-3 mt-3">
+            <h6 class="fw-bold small mb-2">Technical Frameworks:</h6>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge badge-custom bg-tertiary text-light">Bootstrap 5</span>
+              <span class="badge badge-custom bg-tertiary text-light">Vanilla JS</span>
+              <span class="badge badge-custom bg-tertiary text-light">Apps Script Web App</span>
+              <span class="badge badge-custom bg-tertiary text-light">Chart.js</span>
+              <span class="badge badge-custom bg-tertiary text-light">SheetJS (Excel)</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer-custom d-flex justify-content-end">
+          <button type="button" class="btn btn-brand" data-bs-dismiss="modal">Close Dialog</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Wrapper -->
+  <div class="toast-container-custom" id="toast-container"></div>
+
+  <!-- JS Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
