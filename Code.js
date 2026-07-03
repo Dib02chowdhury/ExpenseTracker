@@ -73,15 +73,7 @@ function initDatabase() {
   getOrCreateSheet(ss, "Income", incomeHeaders, []);
 }
 
-// Helper function to add CORS headers to responses
-function addCORSHeaders(response) {
-  return response
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
-// Generate standard responses
+// Generate standard responses (GAS web apps allow cross-origin simple GET/POST without manual CORS headers)
 function jsonResponse(success, message, data) {
   var result = {
     success: success,
@@ -89,9 +81,8 @@ function jsonResponse(success, message, data) {
     data: data || null,
     timestamp: new Date().toISOString()
   };
-  var response = ContentService.createTextOutput(JSON.stringify(result))
+  return ContentService.createTextOutput(JSON.stringify(result))
                        .setMimeType(ContentService.MimeType.JSON);
-  return addCORSHeaders(response);
 }
 
 // Helper to convert sheet data to array of objects
@@ -142,14 +133,8 @@ function doGet(e) {
   }
 }
 
-// Handle preflight OPTIONS requests for CORS
-function doOptions(e) {
-  var response = ContentService.createTextOutput('')
-    .setMimeType(ContentService.MimeType.TEXT);
-  return addCORSHeaders(response);
-}
 
-// Main POST Router (processes text body to avoid preflight CORS)
+// Main POST Router (processes text/plain body to avoid preflight CORS)
 function doPost(e) {
   try {
     initDatabase();

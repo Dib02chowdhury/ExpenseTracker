@@ -85,18 +85,17 @@ class ExpenseTrackerAPI {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         if (isPost) {
+          // text/plain avoids CORS preflight; GAS doPost reads e.postData.contents as JSON
           response = await fetch(url, {
             method: "POST",
-            mode: "cors",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action, ...payload })
           });
         } else {
+          // Simple GET (no custom headers) avoids OPTIONS preflight that GAS cannot answer
           const queryParams = new URLSearchParams({ action, ...payload });
           response = await fetch(`${url}?${queryParams.toString()}`, {
-            method: "GET",
-            mode: "cors",
-            headers: { 'Content-Type': 'application/json' }
+            method: "GET"
           });
         }
 
