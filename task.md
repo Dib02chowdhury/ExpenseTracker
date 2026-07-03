@@ -1,5 +1,3 @@
-# Deployment Tasks
-
 ## GitHub Pages Deployment Checklist
 
 - [x] Add GitHub Actions workflow for gh-pages deployment
