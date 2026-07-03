@@ -252,31 +252,22 @@ class ExpenseTrackerAPI {
           const todayInfo = this.mockGetBudgetInfoForDate(todayStr, settingsMap, history, expenses);
           const tomorrowInfo = this.mockGetBudgetInfoForDate(tomorrowStr, settingsMap, history, expenses);
 
-          // Calculate Weekly and Monthly spending
           const now = new Date();
-          const startOfWeek = new Date(now);
-          const day = startOfWeek.getDay();
-          const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-          startOfWeek.setDate(diff);
-          startOfWeek.setHours(0, 0, 0, 0);
-
           const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-          let weeklySpending = 0;
-          let monthlySpending = 0;
+          let monthlyBudgetSpending = 0;
+          let monthlyTotalSpending = 0;
           let todayIncome = 0;
-          let weeklyIncome = 0;
           let monthlyIncome = 0;
 
           expenses.forEach(exp => {
-            if (!this.expenseCountsInBudget(exp)) return;
             const amt = Number(exp.Amount) || 0;
             const expDate = new Date(exp.Date + "T00:00:00");
-            if (expDate >= startOfWeek && expDate <= now) {
-              weeklySpending += amt;
-            }
             if (expDate >= startOfMonth && expDate <= now) {
-              monthlySpending += amt;
+              monthlyTotalSpending += amt;
+              if (this.expenseCountsInBudget(exp)) {
+                monthlyBudgetSpending += amt;
+              }
             }
           });
 
@@ -287,9 +278,6 @@ class ExpenseTrackerAPI {
             
             if (incStr === todayStr) {
               todayIncome += amt;
-            }
-            if (incDate >= startOfWeek && incDate <= now) {
-              weeklyIncome += amt;
             }
             if (incDate >= startOfMonth && incDate <= now) {
               monthlyIncome += amt;
@@ -305,14 +293,10 @@ class ExpenseTrackerAPI {
             todaySpending: todayInfo.spending,
             remainingBudget: todayInfo.remaining,
             tomorrowBudget: tomorrowInfo.adjustedBudget,
-            weeklySpending,
-            monthlySpending,
-            
-            // Income variables
+            monthlyBudgetSpending,
+            monthlyTotalSpending,
             todayIncome,
-            weeklyIncome,
             monthlyIncome,
-            netSavings: (monthlyIncome - monthlySpending),
             
             recentExpenses: sortedExpenses.slice(0, 5),
             categories: getCategories(),

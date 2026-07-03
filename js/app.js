@@ -238,17 +238,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("card-today-spending").textContent = formatCurrency(d.todaySpending, cur);
     document.getElementById("card-remaining-budget").textContent = formatCurrency(d.remainingBudget, cur);
     document.getElementById("card-tomorrow-budget").textContent = formatCurrency(d.tomorrowBudget, cur);
-    document.getElementById("card-weekly-spending").textContent = formatCurrency(d.weeklySpending, cur);
-    document.getElementById("card-monthly-spending").textContent = formatCurrency(d.monthlySpending, cur);
-    
-    // Income Additions
+    document.getElementById("card-monthly-budget-spending").textContent = formatCurrency(d.monthlyBudgetSpending, cur);
+    document.getElementById("card-monthly-total-spending").textContent = formatCurrency(d.monthlyTotalSpending, cur);
     document.getElementById("card-today-income").textContent = formatCurrency(d.todayIncome, cur);
-    document.getElementById("card-weekly-income").textContent = formatCurrency(d.weeklyIncome, cur);
     document.getElementById("card-monthly-income").textContent = formatCurrency(d.monthlyIncome, cur);
-    
-    // Net Savings Card
-    const savingsEl = document.getElementById("card-net-savings");
-    savingsEl.textContent = formatCurrency(d.netSavings, cur);
 
     // Progress Bar computation
     const spent = d.todaySpending;
@@ -1218,6 +1211,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       resetExpenseFormDates();
     }
     expenseModal.show();
+    setTimeout(() => document.getElementById("expense-amount")?.focus(), 300);
   }
 
   function openIncomeModal(incomeData = null) {

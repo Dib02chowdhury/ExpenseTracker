@@ -411,30 +411,22 @@ function getDashboardData(ss) {
   var todayBudgetInfo = getBudgetInfoForDate(ss, todayStr, settings);
   var tomorrowBudgetInfo = getBudgetInfoForDate(ss, tomorrowStr, settings);
   
-  var weeklySpending = 0;
-  var monthlySpending = 0;
+  var monthlyBudgetSpending = 0;
+  var monthlyTotalSpending = 0;
   var todayIncome = 0;
-  var weeklyIncome = 0;
   var monthlyIncome = 0;
   
   var todayObj = new Date();
-  var startOfWeek = new Date(todayObj);
-  var day = startOfWeek.getDay();
-  var diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-  startOfWeek.setDate(diff);
-  startOfWeek.setHours(0, 0, 0, 0);
-  
   var startOfMonth = new Date(todayObj.getFullYear(), todayObj.getMonth(), 1);
   
   expenses.forEach(function(exp) {
-    if (!expenseCountsInBudget(exp)) return;
     var amt = Number(exp.Amount) || 0;
     var expDate = new Date(exp.Date + "T00:00:00");
-    if (expDate >= startOfWeek && expDate <= todayObj) {
-      weeklySpending += amt;
-    }
     if (expDate >= startOfMonth && expDate <= todayObj) {
-      monthlySpending += amt;
+      monthlyTotalSpending += amt;
+      if (expenseCountsInBudget(exp)) {
+        monthlyBudgetSpending += amt;
+      }
     }
   });
 
@@ -445,9 +437,6 @@ function getDashboardData(ss) {
     
     if (incStr === todayStr) {
       todayIncome += amt;
-    }
-    if (incDate >= startOfWeek && incDate <= todayObj) {
-      weeklyIncome += amt;
     }
     if (incDate >= startOfMonth && incDate <= todayObj) {
       monthlyIncome += amt;
@@ -465,14 +454,10 @@ function getDashboardData(ss) {
     todaySpending: todayBudgetInfo.spending,
     remainingBudget: todayBudgetInfo.remaining,
     tomorrowBudget: tomorrowBudgetInfo.adjustedBudget,
-    weeklySpending: weeklySpending,
-    monthlySpending: monthlySpending,
-    
-    // Income Additions
+    monthlyBudgetSpending: monthlyBudgetSpending,
+    monthlyTotalSpending: monthlyTotalSpending,
     todayIncome: todayIncome,
-    weeklyIncome: weeklyIncome,
     monthlyIncome: monthlyIncome,
-    netSavings: (monthlyIncome - monthlySpending),
     
     recentExpenses: sortedExpenses.slice(0, 5),
     categories: categories,

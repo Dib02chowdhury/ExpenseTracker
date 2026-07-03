@@ -216,7 +216,7 @@
             </div>
           </div>
 
-          <!-- Metric Cards Grid (12 Cards with Income and Savings) -->
+          <!-- Metric Cards Grid -->
           <div class="row row-cols-2 row-cols-md-4 g-3 g-md-4 mb-4">
             <!-- Card 1: Today's Base Budget -->
             <div class="col">
@@ -266,28 +266,28 @@
                 <div class="stat-card-label">Today's Income</div>
               </div>
             </div>
-            <!-- Card 7: Monthly Spending -->
+            <!-- Card 7: Monthly Budget Spending -->
+            <div class="col">
+              <div class="glass-card stat-card border-bottom border-3 border-warning">
+                <div class="stat-card-icon"><i class="fa-solid fa-chart-pie text-warning"></i></div>
+                <div class="stat-card-value text-warning" id="card-monthly-budget-spending">$0.00</div>
+                <div class="stat-card-label">Monthly Budget Spending</div>
+              </div>
+            </div>
+            <!-- Card 8: Monthly Total Spending -->
             <div class="col">
               <div class="glass-card stat-card border-bottom border-3 border-danger">
                 <div class="stat-card-icon"><i class="fa-solid fa-receipt text-danger"></i></div>
-                <div class="stat-card-value text-danger" id="card-monthly-spending">$0.00</div>
-                <div class="stat-card-label">Monthly Spending</div>
+                <div class="stat-card-value text-danger" id="card-monthly-total-spending">$0.00</div>
+                <div class="stat-card-label">Monthly Total Spending</div>
               </div>
             </div>
-            <!-- Card 8: Monthly Income -->
+            <!-- Card 9: Monthly Income -->
             <div class="col">
               <div class="glass-card stat-card border-bottom border-3 border-success">
                 <div class="stat-card-icon"><i class="fa-solid fa-wallet text-success"></i></div>
                 <div class="stat-card-value text-success" id="card-monthly-income">$0.00</div>
                 <div class="stat-card-label">Monthly Income</div>
-              </div>
-            </div>
-            <!-- Card 9: Net Savings -->
-            <div class="col">
-              <div class="glass-card stat-card bg-brand-gradient text-white border-0">
-                <div class="stat-card-icon bg-white bg-opacity-20 text-white"><i class="fa-solid fa-vault"></i></div>
-                <div class="stat-card-value" id="card-net-savings">$0.00</div>
-                <div class="stat-card-label text-white text-opacity-80">Net Monthly Savings</div>
               </div>
             </div>
             <!-- Card 10: Tomorrow's Budget -->
@@ -296,22 +296,6 @@
                 <div class="stat-card-icon"><i class="fa-solid fa-calendar-plus"></i></div>
                 <div class="stat-card-value" id="card-tomorrow-budget">$0.00</div>
                 <div class="stat-card-label">Tomorrow Budget (Est)</div>
-              </div>
-            </div>
-            <!-- Card 11: Weekly Spending -->
-            <div class="col">
-              <div class="glass-card stat-card">
-                <div class="stat-card-icon"><i class="fa-solid fa-calendar-week"></i></div>
-                <div class="stat-card-value" id="card-weekly-spending">$0.00</div>
-                <div class="stat-card-label">Weekly Spending</div>
-              </div>
-            </div>
-            <!-- Card 12: Weekly Income -->
-            <div class="col">
-              <div class="glass-card stat-card">
-                <div class="stat-card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                <div class="stat-card-value" id="card-weekly-income">$0.00</div>
-                <div class="stat-card-label">Weekly Income</div>
               </div>
             </div>
           </div>
@@ -850,64 +834,78 @@
 
   <!-- Add/Edit Expense Modal -->
   <div class="modal fade" id="expenseModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content modal-content-glass">
-        <form id="expense-form">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable expense-modal-dialog">
+      <div class="modal-content modal-content-glass expense-modal-content">
+        <form id="expense-form" class="expense-form">
           <input type="hidden" id="expense-id">
           <input type="hidden" id="expense-action" value="add">
           
-          <div class="modal-header-custom d-flex justify-content-between align-items-center">
-            <h5 class="modal-title fw-bold" id="expenseModalLabel">Log Expense</h5>
+          <div class="modal-header-custom expense-modal-header d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="modal-title fw-bold mb-0" id="expenseModalLabel">Log Expense</h5>
+              <p class="text-muted small mb-0 mt-1">Quickly track what you spent today</p>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           
-          <div class="modal-body p-4">
-            <div class="row g-3">
-              <div class="col-12">
-                <label class="form-label small text-muted">Expense Description *</label>
-                <input type="text" class="form-control form-control-custom" id="expense-name" required placeholder="e.g. Groceries at Market">
+          <div class="modal-body expense-modal-body">
+            <div class="expense-amount-section">
+              <label class="form-label expense-field-label" for="expense-amount">Amount *</label>
+              <div class="expense-amount-input-wrap">
+                <span class="expense-currency-symbol" id="expense-currency-addon">$</span>
+                <input type="number" class="expense-amount-input" id="expense-amount" required min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" autocomplete="off">
               </div>
-              <div class="col-sm-6">
-                <label class="form-label small text-muted">Amount *</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-tertiary border-0 text-muted" id="expense-currency-addon">$</span>
-                  <input type="number" class="form-control form-control-custom" id="expense-amount" required min="0.01" step="0.01" placeholder="0.00">
+            </div>
+
+            <div class="expense-field">
+              <label class="form-label expense-field-label" for="expense-name">What did you spend on? *</label>
+              <input type="text" class="form-control form-control-custom expense-input" id="expense-name" required placeholder="e.g. Groceries, Bus fare, Coffee">
+            </div>
+
+            <div class="expense-field">
+              <label class="form-label expense-field-label" for="expense-category">Category *</label>
+              <select class="form-select form-control-custom expense-input" id="expense-category" required>
+                <!-- Dynamically loaded -->
+              </select>
+            </div>
+
+            <div class="row g-2 expense-datetime-row">
+              <div class="col-6">
+                <label class="form-label expense-field-label" for="expense-date">Date</label>
+                <input type="date" class="form-control form-control-custom expense-input" id="expense-date" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label expense-field-label" for="expense-time">Time</label>
+                <input type="time" class="form-control form-control-custom expense-input" id="expense-time" required>
+              </div>
+            </div>
+
+            <div class="budget-toggle-card">
+              <div class="budget-toggle-content">
+                <div class="budget-toggle-text">
+                  <span class="budget-toggle-title">Count toward daily budget</span>
+                  <span class="budget-toggle-hint">Turn off for rent, bills, or other costs that shouldn't affect your daily limit.</span>
                 </div>
-              </div>
-              <div class="col-sm-6">
-                <label class="form-label small text-muted">Category *</label>
-                <select class="form-select form-control-custom" id="expense-category" required>
-                  <!-- Dynamically loaded -->
-                </select>
-              </div>
-              <div class="col-sm-6">
-                <label class="form-label small text-muted">Date</label>
-                <input type="date" class="form-control form-control-custom" id="expense-date" required>
-              </div>
-              <div class="col-sm-6">
-                <label class="form-label small text-muted">Time</label>
-                <input type="time" class="form-control form-control-custom" id="expense-time" required>
-              </div>
-              <div class="col-12">
-                <div class="form-check form-switch">
+                <div class="form-check form-switch budget-toggle-switch m-0">
                   <input class="form-check-input" type="checkbox" id="expense-count-in-budget" checked>
-                  <label class="form-check-label small" for="expense-count-in-budget">
-                    Include in daily budget calculations
-                    <span class="text-muted d-block">Turn off for one-off costs like rent that should not affect your daily spending limit.</span>
-                  </label>
                 </div>
               </div>
-              <div class="col-12">
-                <label class="form-label small text-muted">Notes (Optional)</label>
-                <textarea class="form-control form-control-custom" id="expense-notes" rows="2" placeholder="More details about this transaction..."></textarea>
-              </div>
+            </div>
+
+            <div class="expense-field mb-0">
+              <label class="form-label expense-field-label" for="expense-notes">Notes <span class="text-muted fw-normal">(optional)</span></label>
+              <textarea class="form-control form-control-custom expense-input" id="expense-notes" rows="2" placeholder="Add a short note if needed..."></textarea>
             </div>
           </div>
           
-          <div class="modal-footer-custom d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-secondary-custom text-warning" id="reset-expense-form-btn">Reset</button>
-            <button type="submit" class="btn btn-brand" id="save-expense-btn">Save Record</button>
+          <div class="modal-footer-custom expense-modal-footer">
+            <button type="submit" class="btn btn-brand btn-lg expense-save-btn" id="save-expense-btn">
+              <i class="fa-solid fa-check me-2"></i>Save Expense
+            </button>
+            <div class="expense-secondary-actions">
+              <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-secondary-custom text-warning" id="reset-expense-form-btn">Reset</button>
+            </div>
           </div>
         </form>
       </div>
