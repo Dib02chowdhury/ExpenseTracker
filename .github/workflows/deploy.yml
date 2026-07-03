@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build-and-deploy:
@@ -18,19 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node (for npm scripts, optional)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies (if any)
-        run: npm ci
-        continue-on-error: true   # No npm deps needed, safe to ignore
-
-      - name: Build static assets (optional)
-        run: |
-          echo "No build step required – static files are ready."
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -38,4 +23,3 @@ jobs:
           publish_branch: gh-pages
           publish_dir: .
           force_orphan: true
-          cname: ''
