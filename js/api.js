@@ -169,11 +169,11 @@ class ExpenseTrackerAPI {
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
       const defaultExpenses = [
-        { ID: "exp_1", Date: this.getLocalDateString(today), Time: "13:15", Name: "Lunch at Cafe", Category: "Food & Dining", Amount: 18.5, Notes: "Weekly team lunch", CreatedAt: today.toISOString() },
-        { ID: "exp_2", Date: this.getLocalDateString(today), Time: "08:45", Name: "Bus ticket", Category: "Transportation", Amount: 2.75, Notes: "", CreatedAt: today.toISOString() },
-        { ID: "exp_3", Date: this.getLocalDateString(yesterday), Time: "20:00", Name: "Cinema Movie", Category: "Entertainment", Amount: 15.0, Notes: "Sci-fi film", CreatedAt: yesterday.toISOString() },
-        { ID: "exp_4", Date: this.getLocalDateString(yesterday), Time: "18:30", Name: "Grocery shopping", Category: "Food & Dining", Amount: 32.4, Notes: "Weekly supplies", CreatedAt: yesterday.toISOString() },
-        { ID: "exp_5", Date: this.getLocalDateString(twoDaysAgo), Time: "10:15", Name: "Electricity bill", Category: "Utilities & Bills", Amount: 45.0, Notes: "Monthly payment", CreatedAt: twoDaysAgo.toISOString() }
+        { ID: "exp_1", Date: this.getLocalDateString(today), Time: "13:15", Name: "Lunch at Cafe", Category: "Food & Dining", Amount: 18.5, Notes: "Weekly team lunch", CountInBudget: "true", CreatedAt: today.toISOString() },
+        { ID: "exp_2", Date: this.getLocalDateString(today), Time: "08:45", Name: "Bus ticket", Category: "Transportation", Amount: 2.75, Notes: "", CountInBudget: "true", CreatedAt: today.toISOString() },
+        { ID: "exp_3", Date: this.getLocalDateString(yesterday), Time: "20:00", Name: "Cinema Movie", Category: "Entertainment", Amount: 15.0, Notes: "Sci-fi film", CountInBudget: "true", CreatedAt: yesterday.toISOString() },
+        { ID: "exp_4", Date: this.getLocalDateString(yesterday), Time: "18:30", Name: "Grocery shopping", Category: "Food & Dining", Amount: 32.4, Notes: "Weekly supplies", CountInBudget: "true", CreatedAt: yesterday.toISOString() },
+        { ID: "exp_5", Date: this.getLocalDateString(twoDaysAgo), Time: "10:15", Name: "Electricity bill", Category: "Utilities & Bills", Amount: 45.0, Notes: "Monthly payment", CountInBudget: "true", CreatedAt: twoDaysAgo.toISOString() }
       ];
       localStorage.setItem("mock_expenses", JSON.stringify(defaultExpenses));
     }
@@ -269,6 +269,7 @@ class ExpenseTrackerAPI {
           let monthlyIncome = 0;
 
           expenses.forEach(exp => {
+            if (!this.expenseCountsInBudget(exp)) return;
             const amt = Number(exp.Amount) || 0;
             const expDate = new Date(exp.Date + "T00:00:00");
             if (expDate >= startOfWeek && expDate <= now) {
@@ -380,6 +381,8 @@ class ExpenseTrackerAPI {
             const isCategoryMatch = !payload.category || catName === payload.category;
 
             if (isDateMatch && isCategoryMatch) {
+              const countsInBudget = reportType === "income" || this.expenseCountsInBudget(item);
+              if (!countsInBudget) return;
               filteredItems.push(item);
               const amt = Number(item.Amount) || 0;
               totalAmount += amt;
@@ -469,6 +472,7 @@ class ExpenseTrackerAPI {
             Category: payload.category,
             Amount: Number(payload.amount),
             Notes: payload.notes || "",
+            CountInBudget: payload.countInBudget !== false ? "true" : "false",
             CreatedAt: new Date().toISOString()
           };
 
@@ -498,6 +502,7 @@ class ExpenseTrackerAPI {
           expenses[index].Category = payload.category;
           expenses[index].Amount = Number(payload.amount);
           expenses[index].Notes = payload.notes || "";
+          expenses[index].CountInBudget = payload.countInBudget !== false ? "true" : "false";
 
           setExpenses(expenses);
           const earliestDate = new Date(payload.date) < new Date(oldDate) ? payload.date : oldDate;
@@ -658,6 +663,13 @@ class ExpenseTrackerAPI {
     return Number(settingsMap.weekday_budget) || 50;
   }
 
+  expenseCountsInBudget(exp) {
+    const flag = exp.CountInBudget;
+    if (flag === undefined || flag === null || flag === "") return true;
+    const s = String(flag).toLowerCase();
+    return s !== "false" && s !== "no" && s !== "0";
+  }
+
   mockGetBudgetInfoForDate(dateStr, settingsMap, history, expenses) {
     const hist = history.find(h => h.Date === dateStr);
     if (hist) {
@@ -682,7 +694,7 @@ class ExpenseTrackerAPI {
 
     let spending = 0;
     expenses.forEach(e => {
-      if (e.Date === dateStr) spending += Number(e.Amount) || 0;
+      if (e.Date === dateStr && this.expenseCountsInBudget(e)) spending += Number(e.Amount) || 0;
     });
 
     const adjusted = base + carryForward;
@@ -724,6 +736,7 @@ class ExpenseTrackerAPI {
 
     const spendingByDate = {};
     expenses.forEach(exp => {
+      if (!this.expenseCountsInBudget(exp)) return;
       spendingByDate[exp.Date] = (spendingByDate[exp.Date] || 0) + Number(exp.Amount);
     });
 

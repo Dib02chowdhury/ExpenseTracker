@@ -298,8 +298,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${formatDateDisplay(exp.Date)}</td>
-        <td>${exp.Time || "--:--"}</td>
-        <td class="fw-semibold">${escapeHtml(exp.Name)}</td>
+        <td>${formatTimeDisplay(exp.Time)}</td>
+        <td class="fw-semibold">${escapeHtml(exp.Name)}${expenseCountsInBudget(exp) ? "" : ' <span class="badge bg-secondary-subtle text-muted ms-1">Off-budget</span>'}</td>
         <td><span class="badge-custom ${getCategoryBadgeClass(exp.Category)}">${escapeHtml(exp.Category)}</span></td>
         <td class="fw-bold">${formatCurrency(exp.Amount, cur)}</td>
         <td class="text-muted small text-truncate" style="max-width:150px;" title="${escapeHtml(exp.Notes)}">${escapeHtml(exp.Notes)}</td>
@@ -384,8 +384,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           <input type="checkbox" class="form-check-input select-expense-chk" data-id="${exp.ID}" ${isSelected ? "checked" : ""}>
         </td>
         <td>${formatDateDisplay(exp.Date)}</td>
-        <td>${exp.Time || "--:--"}</td>
-        <td class="fw-semibold">${escapeHtml(exp.Name)}</td>
+        <td>${formatTimeDisplay(exp.Time)}</td>
+        <td class="fw-semibold">${escapeHtml(exp.Name)}${expenseCountsInBudget(exp) ? "" : ' <span class="badge bg-secondary-subtle text-muted ms-1">Off-budget</span>'}</td>
         <td><span class="badge-custom ${getCategoryBadgeClass(exp.Category)}">${escapeHtml(exp.Category)}</span></td>
         <td class="fw-bold">${formatCurrency(exp.Amount, cur)}</td>
         <td class="text-muted small text-truncate" style="max-width:200px;" title="${escapeHtml(exp.Notes)}">${escapeHtml(exp.Notes)}</td>
@@ -526,7 +526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <input type="checkbox" class="form-check-input select-income-chk" data-id="${inc.ID}" ${isSelected ? "checked" : ""}>
         </td>
         <td>${formatDateDisplay(inc.Date)}</td>
-        <td>${inc.Time || "--:--"}</td>
+        <td>${formatTimeDisplay(inc.Time)}</td>
         <td class="fw-semibold">${escapeHtml(inc.Name)}</td>
         <td><span class="badge-custom ${getIncomeSourceBadgeClass(inc.Source)}">${escapeHtml(inc.Source)}</span></td>
         <td class="fw-bold text-success">${formatCurrency(inc.Amount, cur)}</td>
@@ -707,7 +707,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         row.innerHTML = `
           <td>${formatDateDisplay(exp.Date)}</td>
-          <td>${exp.Time || "--:--"}</td>
+          <td>${formatTimeDisplay(exp.Time)}</td>
           <td class="fw-semibold">${escapeHtml(exp.Name)}</td>
           <td><span class="badge-custom ${badgeClass}">${escapeHtml(categoryVal)}</span></td>
           <td class="fw-bold ${amtColor}">${formatCurrency(exp.Amount, cur)}</td>
@@ -1042,6 +1042,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("expense-name").value = "";
       document.getElementById("expense-amount").value = "";
       document.getElementById("expense-notes").value = "";
+      document.getElementById("expense-count-in-budget").checked = true;
     });
 
     document.getElementById("expense-form").addEventListener("submit", handleExpenseSubmit);
@@ -1201,9 +1202,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("expense-name").value = expenseData.Name;
       document.getElementById("expense-amount").value = expenseData.Amount;
       document.getElementById("expense-category").value = expenseData.Category;
-      document.getElementById("expense-date").value = expenseData.Date.split("T")[0];
-      document.getElementById("expense-time").value = expenseData.Time || "00:00";
+      document.getElementById("expense-date").value = normalizeDateInput(expenseData.Date);
+      document.getElementById("expense-time").value = normalizeTimeInput(expenseData.Time);
       document.getElementById("expense-notes").value = expenseData.Notes || "";
+      document.getElementById("expense-count-in-budget").checked = expenseCountsInBudget(expenseData);
     } else {
       document.getElementById("expense-id").value = "";
       document.getElementById("expense-action").value = "add";
@@ -1212,6 +1214,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("expense-name").value = "";
       document.getElementById("expense-amount").value = "";
       document.getElementById("expense-notes").value = "";
+      document.getElementById("expense-count-in-budget").checked = true;
       resetExpenseFormDates();
     }
     expenseModal.show();
@@ -1226,8 +1229,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("income-name").value = incomeData.Name;
       document.getElementById("income-amount").value = incomeData.Amount;
       document.getElementById("income-source").value = incomeData.Source;
-      document.getElementById("income-date").value = incomeData.Date.split("T")[0];
-      document.getElementById("income-time").value = incomeData.Time || "00:00";
+      document.getElementById("income-date").value = normalizeDateInput(incomeData.Date);
+      document.getElementById("income-time").value = normalizeTimeInput(incomeData.Time);
       document.getElementById("income-notes").value = incomeData.Notes || "";
     } else {
       document.getElementById("income-id").value = "";
@@ -1256,7 +1259,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       category: document.getElementById("expense-category").value,
       date: document.getElementById("expense-date").value,
       time: document.getElementById("expense-time").value,
-      notes: document.getElementById("expense-notes").value.trim()
+      notes: document.getElementById("expense-notes").value.trim(),
+      countInBudget: document.getElementById("expense-count-in-budget").checked
     };
 
     if (isEdit) payload.id = id;
@@ -1875,6 +1879,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const today = new Date();
     document.getElementById("expense-date").value = window.api.getLocalDateString(today);
     document.getElementById("expense-time").value = window.api.getLocalTimeString(today);
+    document.getElementById("expense-count-in-budget").checked = true;
     
     const cur = state.settings.currency || "$";
     document.getElementById("expense-currency-addon").textContent = cur;
@@ -1897,10 +1902,56 @@ document.addEventListener("DOMContentLoaded", async () => {
     return `${sign}${symbol}${Math.abs(amt).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
+  function expenseCountsInBudget(exp) {
+    return window.api.expenseCountsInBudget(exp);
+  }
+
+  function normalizeDateInput(value) {
+    if (!value && value !== 0) return "";
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      return window.api.getLocalDateString(value);
+    }
+    const str = String(value).trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.substring(0, 10);
+    const parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) return window.api.getLocalDateString(parsed);
+    return "";
+  }
+
+  function normalizeTimeInput(value) {
+    if (!value && value !== 0) return "00:00";
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      return window.api.getLocalTimeString(value);
+    }
+    if (typeof value === "number") {
+      const totalMinutes = Math.round(value * 24 * 60);
+      const hh = String(Math.floor(totalMinutes / 60) % 24).padStart(2, "0");
+      const mm = String(totalMinutes % 60).padStart(2, "0");
+      return `${hh}:${mm}`;
+    }
+    const str = String(value).trim();
+    if (/^\d{1,2}:\d{2}/.test(str)) {
+      const parts = str.split(":");
+      return `${parts[0].padStart(2, "0")}:${(parts[1] || "00").substring(0, 2).padStart(2, "0")}`;
+    }
+    if (str.includes("T")) {
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) return window.api.getLocalTimeString(parsed);
+    }
+    return str || "00:00";
+  }
+
+  function formatTimeDisplay(timeValue) {
+    const normalized = normalizeTimeInput(timeValue);
+    return normalized || "--:--";
+  }
+
   function formatDateDisplay(dateString) {
-    if (!dateString) return "";
+    const normalized = normalizeDateInput(dateString);
+    if (!normalized) return "";
     try {
-      const date = new Date(dateString + "T00:00:00");
+      const date = new Date(normalized + "T00:00:00");
+      if (isNaN(date.getTime())) return normalized;
       const format = state.settings.date_format || "YYYY-MM-DD";
       
       const dd = String(date.getDate()).padStart(2, '0');
@@ -1911,7 +1962,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (format === "MM/DD/YYYY") return `${mm}/${dd}/${yyyy}`;
       return `${yyyy}-${mm}-${dd}`;
     } catch (e) {
-      return dateString;
+      return normalized;
     }
   }
 

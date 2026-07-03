@@ -61,8 +61,9 @@ function initDatabase() {
   getOrCreateSheet(ss, "Categories", categoriesHeaders, categoriesDefaults);
 
   // 3. Expenses Sheet
-  var expensesHeaders = ["ID", "Date", "Time", "Name", "Category", "Amount", "Notes", "CreatedAt"];
-  getOrCreateSheet(ss, "Expenses", expensesHeaders, []);
+  var expensesHeaders = ["ID", "Date", "Time", "Name", "Category", "Amount", "Notes", "CountInBudget", "CreatedAt"];
+  var expensesSheet = getOrCreateSheet(ss, "Expenses", expensesHeaders, []);
+  ensureExpenseSchema(expensesSheet);
 
   // 4. Budget History Sheet
   var budgetHeaders = ["Date", "Budget", "Spending", "Remaining", "CarryForward", "AdjustedBudget"];
@@ -100,6 +101,159 @@ function sheetToJson(sheet) {
     jsonArray.push(obj);
   }
   return jsonArray;
+}
+
+// Normalize Google Sheets date cells (Date objects / ISO strings) to YYYY-MM-DD
+function normalizeSheetDate(value) {
+  if (value === null || value === undefined || value === "") return "";
+  if (value instanceof Date) {
+    if (isNaN(value.getTime())) return "";
+    return getLocalDateString(value);
+  }
+  var str = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.substring(0, 10);
+  var parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) return getLocalDateString(parsed);
+  return str;
+}
+
+// Normalize Google Sheets time cells (Date with 1899 base / fractions) to HH:mm
+function normalizeSheetTime(value) {
+  if (value === null || value === undefined || value === "") return "";
+  if (value instanceof Date) {
+    if (isNaN(value.getTime())) return "";
+    return getLocalTimeString(value);
+  }
+  if (typeof value === "number") {
+    var totalMinutes = Math.round(value * 24 * 60);
+    var hh = String(Math.floor(totalMinutes / 60) % 24);
+    var mm = String(totalMinutes % 60);
+    if (hh.length < 2) hh = "0" + hh;
+    if (mm.length < 2) mm = "0" + mm;
+    return hh + ":" + mm;
+  }
+  var str = String(value).trim();
+  if (/^\d{1,2}:\d{2}/.test(str)) {
+    var parts = str.split(":");
+    var h = parts[0].length < 2 ? "0" + parts[0] : parts[0];
+    var m = (parts[1] || "00").substring(0, 2);
+    if (m.length < 2) m = "0" + m;
+    return h + ":" + m;
+  }
+  if (str.indexOf("T") !== -1) {
+    var d = new Date(str);
+    if (!isNaN(d.getTime())) return getLocalTimeString(d);
+  }
+  return str;
+}
+
+function expenseCountsInBudget(exp) {
+  var flag = exp.CountInBudget;
+  if (flag === undefined || flag === null || flag === "") return true;
+  if (typeof flag === "boolean") return flag;
+  var s = String(flag).toLowerCase();
+  return s !== "false" && s !== "no" && s !== "0";
+}
+
+function ensureExpenseSchema(sheet) {
+  if (!sheet || sheet.getLastRow() < 1) return;
+  var lastCol = Math.max(sheet.getLastColumn(), 8);
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var hasCountCol = false;
+  for (var i = 0; i < headers.length; i++) {
+    if (headers[i] === "CountInBudget") hasCountCol = true;
+  }
+  if (!hasCountCol) {
+    var createdAtCol = -1;
+    for (var j = 0; j < headers.length; j++) {
+      if (headers[j] === "CreatedAt") createdAtCol = j + 1;
+    }
+    if (createdAtCol > 0) {
+      sheet.insertColumnBefore(createdAtCol);
+      sheet.getRange(1, createdAtCol).setValue("CountInBudget");
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        sheet.getRange(2, createdAtCol, lastRow - 1, 1).setValue("true");
+      }
+    } else {
+      sheet.getRange(1, headers.length + 1).setValue("CountInBudget");
+    }
+  }
+  var rows = sheet.getLastRow();
+  if (rows >= 1) {
+    sheet.getRange(1, 2, rows, 1).setNumberFormat("@");
+    sheet.getRange(1, 3, rows, 1).setNumberFormat("@");
+  }
+}
+
+function expensesToJson(sheet) {
+  ensureExpenseSchema(sheet);
+  var rows = sheet.getDataRange().getValues();
+  if (rows.length <= 1) return [];
+  var headers = rows[0];
+  var jsonArray = [];
+  for (var i = 1; i < rows.length; i++) {
+    var row = rows[i];
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) {
+      obj[headers[j]] = row[j];
+    }
+    obj.Date = normalizeSheetDate(obj.Date);
+    obj.Time = normalizeSheetTime(obj.Time);
+    obj.CountInBudget = expenseCountsInBudget(obj) ? "true" : "false";
+    jsonArray.push(obj);
+  }
+  return jsonArray;
+}
+
+function incomeToJson(sheet) {
+  var rows = sheet.getDataRange().getValues();
+  if (rows.length <= 1) return [];
+  var headers = rows[0];
+  var jsonArray = [];
+  for (var i = 1; i < rows.length; i++) {
+    var row = rows[i];
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) {
+      obj[headers[j]] = row[j];
+    }
+    obj.Date = normalizeSheetDate(obj.Date);
+    obj.Time = normalizeSheetTime(obj.Time);
+    jsonArray.push(obj);
+  }
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 1) {
+    sheet.getRange(1, 2, lastRow, 1).setNumberFormat("@");
+    sheet.getRange(1, 3, lastRow, 1).setNumberFormat("@");
+  }
+  return jsonArray;
+}
+
+function getHeaderColumnMap(sheet) {
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var map = {};
+  for (var i = 0; i < headers.length; i++) {
+    if (headers[i]) map[headers[i]] = i + 1;
+  }
+  return map;
+}
+
+function appendExpenseRow(sheet, data) {
+  ensureExpenseSchema(sheet);
+  var cols = getHeaderColumnMap(sheet);
+  var row = sheet.getLastRow() + 1;
+  sheet.getRange(row, cols.ID).setValue(data.id);
+  sheet.getRange(row, cols.Date).setValue(data.date);
+  sheet.getRange(row, cols.Time).setValue(data.time);
+  sheet.getRange(row, cols.Name).setValue(data.name);
+  sheet.getRange(row, cols.Category).setValue(data.category);
+  sheet.getRange(row, cols.Amount).setValue(data.amount);
+  sheet.getRange(row, cols.Notes).setValue(data.notes || "");
+  if (cols.CountInBudget) {
+    sheet.getRange(row, cols.CountInBudget).setValue(data.countInBudget !== false ? "true" : "false");
+  }
+  sheet.getRange(row, cols.CreatedAt).setValue(data.createdAt);
+  sheet.getRange(row, cols.Date, 1, 2).setNumberFormat("@");
 }
 
 // Main GET Router
@@ -211,7 +365,7 @@ function getCategoriesData(ss) {
 
 function getExpensesData(ss, params) {
   var sheet = ss.getSheetByName("Expenses");
-  var data = sheetToJson(sheet);
+  var data = expensesToJson(sheet);
   data.sort(function(a, b) {
     var dateA = new Date(a.Date + "T" + (a.Time || "00:00"));
     var dateB = new Date(b.Date + "T" + (b.Time || "00:00"));
@@ -222,7 +376,7 @@ function getExpensesData(ss, params) {
 
 function getIncomeData(ss, params) {
   var sheet = ss.getSheetByName("Income");
-  var data = sheetToJson(sheet);
+  var data = incomeToJson(sheet);
   data.sort(function(a, b) {
     var dateA = new Date(a.Date + "T" + (a.Time || "00:00"));
     var dateB = new Date(b.Date + "T" + (b.Time || "00:00"));
@@ -239,8 +393,8 @@ function getDashboardData(ss) {
   var incomeSheet = ss.getSheetByName("Income");
   
   var categories = sheetToJson(categoriesSheet);
-  var expenses = sheetToJson(expensesSheet);
-  var incomes = sheetToJson(incomeSheet);
+  var expenses = expensesToJson(expensesSheet);
+  var incomes = incomeToJson(incomeSheet);
   
   // Recalculate budget if history is empty
   var history = sheetToJson(budgetHistorySheet);
@@ -273,6 +427,7 @@ function getDashboardData(ss) {
   var startOfMonth = new Date(todayObj.getFullYear(), todayObj.getMonth(), 1);
   
   expenses.forEach(function(exp) {
+    if (!expenseCountsInBudget(exp)) return;
     var amt = Number(exp.Amount) || 0;
     var expDate = new Date(exp.Date + "T00:00:00");
     if (expDate >= startOfWeek && expDate <= todayObj) {
@@ -340,10 +495,10 @@ function getReportsData(ss, params) {
   var items = [];
   var chartLabels = [];
   if (reportType === "income") {
-    items = sheetToJson(ss.getSheetByName("Income"));
+    items = incomeToJson(ss.getSheetByName("Income"));
     chartLabels = (settings.income_sources || "Salary,Freelance,Investment,Gifts,Other").split(",").map(function(s) { return s.trim(); });
   } else {
-    items = sheetToJson(ss.getSheetByName("Expenses"));
+    items = expensesToJson(ss.getSheetByName("Expenses"));
     var categories = sheetToJson(ss.getSheetByName("Categories"));
     categories.forEach(function(c) { chartLabels.push(c.Name); });
     chartLabels.push("Uncategorized");
@@ -392,14 +547,16 @@ function getReportsData(ss, params) {
     var isCategoryMatch = !categoryFilter || catName === categoryFilter;
     
     if (isDateMatch && isCategoryMatch) {
-      filteredItems.push(item);
-      var amt = Number(item.Amount) || 0;
-      totalAmount += amt;
-      
-      if (groupMap[catName] !== undefined) {
-        groupMap[catName] += amt;
-      } else {
-        groupMap[catName] = (groupMap[catName] || 0) + amt;
+      var countsInBudget = reportType === "income" || expenseCountsInBudget(item);
+      if (countsInBudget) {
+        filteredItems.push(item);
+        var amt = Number(item.Amount) || 0;
+        totalAmount += amt;
+        if (groupMap[catName] !== undefined) {
+          groupMap[catName] += amt;
+        } else {
+          groupMap[catName] = (groupMap[catName] || 0) + amt;
+        }
       }
     }
   });
@@ -413,7 +570,7 @@ function getReportsData(ss, params) {
   // Calculate daily budget averages (relevant for expenses report)
   var budgetHistory = sheetToJson(ss.getSheetByName("BudgetHistory"));
   var rangeBudgets = budgetHistory.filter(function(h) {
-    var hDate = new Date(h.Date + "T00:00:00");
+    var hDate = new Date(normalizeSheetDate(h.Date) + "T00:00:00");
     return hDate >= start && hDate <= end;
   });
   
@@ -456,7 +613,7 @@ function getReportsData(ss, params) {
     });
     chartDailyAmount.push(dayAmt);
     
-    var dayHistory = budgetHistory.find(function(h) { return h.Date === dateStr; });
+    var dayHistory = budgetHistory.find(function(h) { return normalizeSheetDate(h.Date) === dateStr; });
     var dayBudget = dayHistory ? Number(dayHistory.AdjustedBudget) : getBaseBudget(ss, tempDate, settings);
     chartDailyBudget.push(dayBudget);
     
@@ -500,20 +657,33 @@ function addExpense(ss, payload) {
   var category = payload.category;
   var amount = Number(payload.amount);
   var notes = payload.notes || "";
+  var countInBudget = payload.countInBudget !== false;
   var createdAt = new Date().toISOString();
   
   if (!name || isNaN(amount) || amount <= 0) {
     return jsonResponse(false, "Validation error: Name is required and Amount must be positive.");
   }
   
-  sheet.appendRow([id, date, time, name, category, amount, notes, createdAt]);
+  appendExpenseRow(sheet, {
+    id: id,
+    date: date,
+    time: time,
+    name: name,
+    category: category,
+    amount: amount,
+    notes: notes,
+    countInBudget: countInBudget,
+    createdAt: createdAt
+  });
   recalculateBudgetHistory(ss, date);
   return jsonResponse(true, "Expense added successfully", { id: id });
 }
 
 function updateExpense(ss, payload) {
   var sheet = ss.getSheetByName("Expenses");
+  ensureExpenseSchema(sheet);
   var rows = sheet.getDataRange().getValues();
+  var cols = getHeaderColumnMap(sheet);
   var id = payload.id;
   var date = payload.date;
   var time = payload.time;
@@ -521,6 +691,7 @@ function updateExpense(ss, payload) {
   var category = payload.category;
   var amount = Number(payload.amount);
   var notes = payload.notes || "";
+  var countInBudget = payload.countInBudget !== false;
   
   if (!id || !name || isNaN(amount) || amount <= 0) {
     return jsonResponse(false, "Validation error: ID, Name required and Amount must be positive.");
@@ -531,7 +702,7 @@ function updateExpense(ss, payload) {
   for (var i = 1; i < rows.length; i++) {
     if (rows[i][0] === id) {
       rowIndex = i + 1;
-      oldDate = rows[i][1];
+      oldDate = normalizeSheetDate(rows[i][1]);
       break;
     }
   }
@@ -540,12 +711,16 @@ function updateExpense(ss, payload) {
     return jsonResponse(false, "Expense not found with ID: " + id);
   }
   
-  sheet.getRange(rowIndex, 2).setValue(date);
-  sheet.getRange(rowIndex, 3).setValue(time);
-  sheet.getRange(rowIndex, 4).setValue(name);
-  sheet.getRange(rowIndex, 5).setValue(category);
-  sheet.getRange(rowIndex, 6).setValue(amount);
-  sheet.getRange(rowIndex, 7).setValue(notes);
+  sheet.getRange(rowIndex, cols.Date).setValue(date);
+  sheet.getRange(rowIndex, cols.Time).setValue(time);
+  sheet.getRange(rowIndex, cols.Name).setValue(name);
+  sheet.getRange(rowIndex, cols.Category).setValue(category);
+  sheet.getRange(rowIndex, cols.Amount).setValue(amount);
+  sheet.getRange(rowIndex, cols.Notes).setValue(notes);
+  if (cols.CountInBudget) {
+    sheet.getRange(rowIndex, cols.CountInBudget).setValue(countInBudget ? "true" : "false");
+  }
+  sheet.getRange(rowIndex, cols.Date, 1, 2).setNumberFormat("@");
   
   var earliestDate = oldDate;
   if (new Date(date) < new Date(oldDate)) {
@@ -569,7 +744,7 @@ function deleteExpense(ss, payload) {
   for (var i = 1; i < rows.length; i++) {
     if (rows[i][0] === id) {
       rowIndex = i + 1;
-      date = rows[i][1];
+      date = normalizeSheetDate(rows[i][1]);
       break;
     }
   }
@@ -772,9 +947,9 @@ function getBudgetInfoForDate(ss, dateStr, settings) {
   var historyRows = historySheet.getDataRange().getValues();
   
   for (var i = 1; i < historyRows.length; i++) {
-    if (historyRows[i][0] === dateStr) {
+    if (normalizeSheetDate(historyRows[i][0]) === dateStr) {
       return {
-        date: historyRows[i][0],
+        date: dateStr,
         budget: Number(historyRows[i][1]),
         spending: Number(historyRows[i][2]),
         remaining: Number(historyRows[i][3]),
@@ -793,22 +968,21 @@ function getBudgetInfoForDate(ss, dateStr, settings) {
   
   var carryForward = 0;
   if (settings.carry_forward_enabled === "true") {
-    for (var i = 1; i < historyRows.length; i++) {
-      if (historyRows[i][0] === prevDateStr) {
-        carryForward = Number(historyRows[i][3]) || 0;
+    for (var j = 1; j < historyRows.length; j++) {
+      if (normalizeSheetDate(historyRows[j][0]) === prevDateStr) {
+        carryForward = Number(historyRows[j][3]) || 0;
         break;
       }
     }
   }
   
-  var expensesSheet = ss.getSheetByName("Expenses");
-  var expensesRows = expensesSheet.getDataRange().getValues();
+  var expenses = expensesToJson(ss.getSheetByName("Expenses"));
   var spending = 0;
-  for (var i = 1; i < expensesRows.length; i++) {
-    if (expensesRows[i][1] === dateStr) {
-      spending += Number(expensesRows[i][5]) || 0;
+  expenses.forEach(function(exp) {
+    if (exp.Date === dateStr && expenseCountsInBudget(exp)) {
+      spending += Number(exp.Amount) || 0;
     }
-  }
+  });
   
   var adjusted = base + carryForward;
   var remaining = adjusted - spending;
@@ -824,8 +998,7 @@ function getBudgetInfoForDate(ss, dateStr, settings) {
 }
 
 function recalculateBudgetHistory(ss, startDateStr) {
-  var expensesSheet = ss.getSheetByName("Expenses");
-  var expenses = sheetToJson(expensesSheet);
+  var expenses = expensesToJson(ss.getSheetByName("Expenses"));
   var settings = getSettingsMap(ss);
   
   var today = new Date();
@@ -854,6 +1027,7 @@ function recalculateBudgetHistory(ss, startDateStr) {
   
   var spendingByDate = {};
   expenses.forEach(function(exp) {
+    if (!expenseCountsInBudget(exp)) return;
     var dStr = exp.Date;
     var amt = Number(exp.Amount) || 0;
     spendingByDate[dStr] = (spendingByDate[dStr] || 0) + amt;
@@ -863,7 +1037,7 @@ function recalculateBudgetHistory(ss, startDateStr) {
   var oldHistory = sheetToJson(historySheet);
   var historyMap = {};
   oldHistory.forEach(function(h) {
-    historyMap[h.Date] = h;
+    historyMap[normalizeSheetDate(h.Date)] = h;
   });
   
   var calculatedHistory = [];
@@ -899,13 +1073,14 @@ function recalculateBudgetHistory(ss, startDateStr) {
     curDate.setDate(curDate.getDate() + 1);
   }
   
+  var historySheet = ss.getSheetByName("BudgetHistory");
   var historyRows = historySheet.getDataRange().getValues();
   var newHistoryRows = [historyRows[0]];
   
-  for (var i = 1; i < historyRows.length; i++) {
-    var rowDate = new Date(historyRows[i][0] + "T00:00:00");
+  for (var k = 1; k < historyRows.length; k++) {
+    var rowDate = new Date(normalizeSheetDate(historyRows[k][0]) + "T00:00:00");
     if (rowDate < minDate) {
-      newHistoryRows.push(historyRows[i]);
+      newHistoryRows.push(historyRows[k]);
     }
   }
   
