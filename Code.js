@@ -468,7 +468,7 @@ function getDashboardData(ss) {
 }
 
 function getReportsData(ss, params) {
-  var rangeType = params.range || "monthly";
+  var rangeType = params.range || "today";
   var reportType = params.type || "expense"; // expense or income
   var startDateStr = params.startDate;
   var endDateStr = params.endDate;

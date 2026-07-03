@@ -113,7 +113,7 @@
           <!-- Connection Status Indicator -->
           <span class="badge badge-custom bg-secondary text-light d-flex align-items-center" id="connection-status" title="API State">
             <i class="fa-solid fa-circle text-success me-1 blink" id="status-dot"></i>
-            <span id="status-text">Mock DB Mode</span>
+            <span id="status-text" class="d-none d-md-inline">Mock DB Mode</span>
           </span>
 
           <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
@@ -121,7 +121,7 @@
           </button>
           
           <button class="btn btn-brand" id="quick-add-btn">
-            <i class="fa-solid fa-plus me-1"></i> Add Expense
+            <i class="fa-solid fa-plus"></i><span class="d-none d-sm-inline ms-1">Add Expense</span>
           </button>
         </div>
       </header>
@@ -209,9 +209,9 @@
             <div class="progress-bar-custom">
               <div class="progress-bar-fill" id="dashboard-progress-bar" style="width: 0%"></div>
             </div>
-            <div class="d-flex justify-content-between mt-2 small text-muted">
+            <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mt-2 small text-muted progress-stats-row">
               <span>Spent: <strong class="text-danger" id="progress-spent-text">$0.00</strong></span>
-              <span>Warning Limit: <span id="progress-warning-text">20%</span></span>
+              <span>Warning: <span id="progress-warning-text">20%</span></span>
               <span>Available: <strong class="text-success" id="progress-avail-text">$0.00</strong></span>
             </div>
           </div>
@@ -258,15 +258,7 @@
                 <div class="stat-card-label">Today's Spending</div>
               </div>
             </div>
-            <!-- Card 6: Today's Income -->
-            <div class="col">
-              <div class="glass-card stat-card border-bottom border-3 border-info">
-                <div class="stat-card-icon"><i class="fa-solid fa-hand-holding-dollar text-info"></i></div>
-                <div class="stat-card-value text-info" id="card-today-income">$0.00</div>
-                <div class="stat-card-label">Today's Income</div>
-              </div>
-            </div>
-            <!-- Card 7: Monthly Budget Spending -->
+            <!-- Card 6: Monthly Budget Spending -->
             <div class="col">
               <div class="glass-card stat-card border-bottom border-3 border-warning">
                 <div class="stat-card-icon"><i class="fa-solid fa-chart-pie text-warning"></i></div>
@@ -518,21 +510,23 @@
           </div>
 
           <!-- Analysis Type Selector and Timeframe Nav Pills -->
-          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-            <ul class="nav nav-pills nav-pills-custom gap-2" id="reports-tabs" role="tablist">
+          <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-between gap-3 mb-4">
+            <div class="reports-tabs-scroll">
+              <ul class="nav nav-pills nav-pills-custom gap-2 flex-nowrap" id="reports-tabs" role="tablist">
               <li class="nav-item"><a class="nav-link active" data-range="today" href="#">Today</a></li>
               <li class="nav-item"><a class="nav-link" data-range="yesterday" href="#">Yesterday</a></li>
               <li class="nav-item"><a class="nav-link" data-range="weekly" href="#">Weekly</a></li>
               <li class="nav-item"><a class="nav-link" data-range="monthly" href="#">Monthly</a></li>
               <li class="nav-item"><a class="nav-link" data-range="yearly" href="#">Yearly</a></li>
               <li class="nav-item"><a class="nav-link" data-range="category" href="#">By Category</a></li>
-              <li class="nav-item"><a class="nav-link" data-range="custom" href="#">Custom Range</a></li>
+              <li class="nav-item"><a class="nav-link" data-range="custom" href="#">Custom</a></li>
             </ul>
+            </div>
 
             <!-- Report Type (Expenses vs Income) -->
-            <div class="d-flex align-items-center gap-2">
-              <label class="small text-muted fw-bold">Analysis Type:</label>
-              <select class="form-select form-control-custom form-control-sm" id="report-type-select" style="min-width: 150px;">
+            <div class="d-flex align-items-center gap-2 report-type-row">
+              <label class="small text-muted fw-bold text-nowrap">Analysis:</label>
+              <select class="form-select form-control-custom form-control-sm" id="report-type-select">
                 <option value="expense">Expense Analytics</option>
                 <option value="income">Income Analytics</option>
               </select>

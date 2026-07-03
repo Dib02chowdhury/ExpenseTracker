@@ -308,7 +308,7 @@ class ExpenseTrackerAPI {
 
       case "getReports":
         {
-          const rangeType = payload.range || "monthly";
+          const rangeType = payload.range || "today";
           const reportType = payload.type || "expense";
           const settingsMap = {};
           getSettings().forEach(s => settingsMap[s.Key] = s.Value);

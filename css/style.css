@@ -92,6 +92,17 @@
 }
 
 /* Base resets & general rules */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: var(--font-primary);
   background-color: var(--bg-primary);
@@ -323,6 +334,8 @@ body.sidebar-collapsed .main-content {
   position: sticky;
   top: 0;
   z-index: 999;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .content-wrapper {
@@ -825,6 +838,11 @@ body.sidebar-collapsed .main-content {
 
 /* Mobile Devices Styling Rules (Screens < 768px) */
 @media (max-width: 767.98px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
   /* Hide the desktop sidebar */
   .sidebar {
     display: none;
@@ -833,50 +851,292 @@ body.sidebar-collapsed .main-content {
   /* Display bottom mobile nav */
   .bottom-nav {
     display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   /* Make main content occupy full width and push up above bottom nav */
   .main-content {
     margin-left: 0 !important;
-    margin-bottom: var(--bottom-nav-height) !important;
+    margin-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px)) !important;
+    width: 100%;
+    max-width: 100%;
   }
 
   .topbar {
-    padding: 0 1rem;
-    height: 60px;
+    padding: 0.5rem 0.5rem;
+    height: auto;
+    min-height: 56px;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
   }
 
-  /* Hide burger toggle icon on mobile since sidebar is gone */
+  .topbar .d-flex {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .topbar .d-flex.align-items-center.gap-3 {
+    gap: 0.25rem !important;
+  }
+
+  .topbar h5 {
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #connection-status {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  #connection-status span {
+    display: none;
+  }
+
   #sidebar-toggle {
     display: none !important;
   }
 
+  #quick-add-btn {
+    flex-shrink: 0;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    min-width: 40px;
+    min-height: 36px;
+  }
+
+  #quick-add-btn span {
+    display: none;
+  }
+
   .content-wrapper {
-    padding: 1rem;
+    padding: 0.75rem;
+    max-width: 100%;
+  }
+
+  /* Page headings */
+  .view-section h2 {
+    font-size: 1.35rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .view-section h2 + p {
+    font-size: 0.85rem;
+    overflow-wrap: break-word;
+  }
+
+  /* Disable hover lift on touch — reduces layout jank */
+  .glass-card:hover {
+    transform: none;
+    box-shadow: var(--glass-shadow);
   }
 
   .landing-title {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .landing-title br {
+    display: none;
   }
 
   .landing-hero {
-    padding: 2rem 0;
+    padding: 1rem 1rem;
+    min-height: auto;
   }
 
-  /* Adjust grid spacing */
+  .landing-subtitle {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .landing-cards {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+  }
+
+  /* Stat cards */
   .stat-card {
-    padding: 1rem;
+    padding: 0.75rem;
   }
 
   .stat-card-value {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
+    word-break: break-word;
+  }
+
+  .stat-card-label {
+    font-size: 0.7rem;
+    line-height: 1.2;
+  }
+
+  .stat-card-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Budget progress card */
+  .progress-stats-row {
+    font-size: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .progress-stats-row span {
+    flex: 1 1 auto;
+    min-width: 60px;
+  }
+
+  /* Page action bars — full-width tap targets */
+  .view-section .btn-brand,
+  .view-section .btn-secondary-custom {
+    min-height: 44px;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  #refresh-dashboard-btn,
+  #add-expense-btn-register,
+  #add-income-btn-register {
+    flex: 1 1 auto;
+  }
+
+  /* Glass cards less padding on phones */
+  .glass-card.p-4,
+  .glass-card.p-3 {
+    padding: 0.75rem !important;
+  }
+
+  /* Forms — touch-friendly inputs */
+  .form-control-custom,
+  .form-select.form-control-custom {
+    min-height: 44px;
+    font-size: 16px; /* prevents iOS zoom on focus */
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Tables — compact, scrollable */
+  .table-responsive-custom {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-custom th,
+  .table-custom td {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .table-custom td.text-truncate {
+    max-width: 100px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .table-custom .btn-sm {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  /* Pagination */
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  /* Reports — horizontal scroll tabs */
+  .reports-tabs-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -0.75rem;
+    padding: 0 0.75rem 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .reports-tabs-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-pills-custom .nav-link {
+    white-space: nowrap;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .report-type-row {
+    width: 100%;
+  }
+
+  .report-type-row .form-select {
+    flex: 1;
+    min-width: 0 !important;
+  }
+
+  /* Charts */
+  .chart-container-custom {
+    min-height: 200px;
+    max-height: 250px;
+    width: 100%;
+  }
+
+  /* Toast — repositioned for mobile */
+  .toast-container-custom {
+    bottom: calc(var(--bottom-nav-height) + 1rem);
+    right: 0.75rem;
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+  }
+
+  .toast-custom {
+    min-width: auto;
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Generic modals — bottom sheet on mobile */
+  .modal-dialog:not(.expense-modal-dialog) {
+    margin: 0;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .modal-content-glass:not(.expense-modal-content) {
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92vh;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  .modal-header-custom,
+  .modal-footer-custom {
+    padding: 0.85rem;
+  }
+
+  .modal-body {
+    padding: 0.85rem;
   }
 
   /* Expense modal — full-screen sheet on phones */
   .expense-modal-dialog {
     margin: 0;
     max-width: 100%;
-    min-height: 100%;
+    height: 100%;
     display: flex;
     align-items: flex-end;
   }
@@ -884,31 +1144,37 @@ body.sidebar-collapsed .main-content {
   .expense-modal-content {
     border-radius: 20px 20px 0 0 !important;
     min-height: auto;
-    max-height: 96vh;
+    max-height: 95vh;
     width: 100%;
     border-bottom: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .expense-modal-header {
-    padding: 1.1rem 1.15rem 0.85rem !important;
+    padding: 1rem 1rem 0.75rem !important;
     position: sticky;
     top: 0;
     z-index: 2;
     background: var(--bg-secondary);
+    flex-shrink: 0;
   }
 
   .expense-modal-body {
-    padding: 0.85rem 1.15rem 1rem;
-    gap: 0.85rem;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
     overflow-y: auto;
+    flex: 1;
+    min-width: 0;
   }
 
   .expense-amount-section {
-    padding: 0.9rem 1rem;
+    padding: 0.85rem;
   }
 
   .expense-amount-input {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .expense-datetime-row .col-6 {
@@ -921,14 +1187,46 @@ body.sidebar-collapsed .main-content {
     bottom: 0;
     background: var(--bg-secondary);
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
-    padding-bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px)) !important;
+    flex-shrink: 0;
   }
 
-  .modal-dialog:not(.expense-modal-dialog) {
-    margin: 0.5rem;
+  .expense-save-btn {
+    min-height: 44px;
+    font-size: 0.9rem;
   }
-  
-  .modal-content-glass:not(.expense-modal-content) {
-    border-radius: 16px;
+
+  /* Form inputs wrapping */
+  .form-group {
+    word-break: break-word;
+  }
+
+  .form-group label {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Extra small phones (< 360px) */
+@media (max-width: 359.98px) {
+  .stat-card-label {
+    font-size: 0.65rem;
+  }
+
+  .bottom-nav-item span {
+    font-size: 0.6rem;
+  }
+
+  .landing-title {
+    font-size: 1.4rem;
+  }
+
+  .topbar h5 {
+    font-size: 0.75rem;
+  }
+
+  #quick-add-btn {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.75rem;
   }
 }

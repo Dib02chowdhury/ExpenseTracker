@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Active report configuration
     report: {
-      range: "monthly",
+      range: "today",
       type: "expense"
     },
 
@@ -240,7 +240,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("card-tomorrow-budget").textContent = formatCurrency(d.tomorrowBudget, cur);
     document.getElementById("card-monthly-budget-spending").textContent = formatCurrency(d.monthlyBudgetSpending, cur);
     document.getElementById("card-monthly-total-spending").textContent = formatCurrency(d.monthlyTotalSpending, cur);
-    document.getElementById("card-today-income").textContent = formatCurrency(d.todayIncome, cur);
     document.getElementById("card-monthly-income").textContent = formatCurrency(d.monthlyIncome, cur);
 
     // Progress Bar computation
@@ -598,6 +597,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function loadReports(range) {
     showLoadingState();
     state.report.range = range;
+    syncReportTabUI(range);
 
     const type = document.getElementById("report-type-select").value;
     state.report.type = type;
@@ -644,6 +644,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     } finally {
       hideLoadingState();
     }
+  }
+
+  function syncReportTabUI(range) {
+    document.querySelectorAll("#reports-tabs a").forEach(tab => {
+      tab.classList.toggle("active", tab.getAttribute("data-range") === range);
+    });
   }
 
   function renderReportsData(type) {
